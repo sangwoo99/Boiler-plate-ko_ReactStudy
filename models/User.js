@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 //스키마: 원하는 칼럼의 타입,기타 설정등을 한다.
 const userSchema = mongoose.Schema({
@@ -28,6 +30,36 @@ const userSchema = mongoose.Schema({
     }
 
 })
+
+//저장하기 전에 동작하는 함수
+userSchema.pre('save', function( next ) {
+    var user = this;
+
+    if(user.isModified('password')) {
+        // 비밀번호를 암호화 시킨다.
+        bcrypt.genSalt(saltRounds, function(err, salt) {
+            if(err) return next(err)
+    
+            bcrypt.hash(user.password, salt, function(err, hash) {
+                if(err) return next(err)
+                user.password = hash
+                next()
+            })
+        })
+
+    } else {
+        next()
+    }
+})
+
+userSchema.methods.comparePassword = function(plainPassword, cb) {
+
+    //plainPassword: 1234/ 암호화된 비밀번호 
+    bcrypt.compare(plainPassword, this.password, function(err, isMatch) {
+        if(err) return cb(err), 
+        cb(null, isMatch)
+    })
+}
 
 //스키마를 만들고 모델로 감싸준다.
 const User = mongoose.model('User', userSchema);
