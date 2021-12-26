@@ -8,6 +8,7 @@ import {
 import LandingPage from "./components/views/LandingPage/LandingPage";
 import LoginPage from "./components/views/LoginPage/LoginPage";
 import RegisterPage from "./components/views/RegisterPage/RegisterPage";
+import Auth from "./hoc/auth";
 
 function App() {
   // react-router-dom 6버전부턴 Switch => Routes/ component=> element
@@ -22,9 +23,9 @@ function App() {
           of them to render at a time
         */}
         <Routes>  
-          <Route exact path="/" element={<LandingPage/>}/>
-          <Route exact path="/login" element={<LoginPage/>}/>
-          <Route exact path="/register" element={<RegisterPage/>}/>
+          <Route exact path="/" element={<LandingPage/>}/> 
+          <Route exact path="/login" element={Auth(<LoginPage/>, false)}/>  /* 버전차이로 에러 */
+          <Route exact path="/register" element={Auth(<RegisterPage/>, false)}/>
         </Routes>
       </div>
     </Router>
